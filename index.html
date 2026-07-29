@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Georger.</title>
+  <style>
+    :root {
+      --bg-color: #FAF7F2;
+      --card-bg: #FFFFFF;
+      --border-color: #1A1A1A;
+      --text-main: #1A1A1A;
+      --text-muted: #666666;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* --- Global Header --- */
+    header {
+      width: 100%;
+      max-width: 850px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    /* Top Left Nav Toggle */
+    .nav-toggle {
+      display: inline-flex;
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 9999px;
+      padding: 3px;
+      width: fit-content;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      padding: 6px 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 9999px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn.active {
+      background-color: var(--border-color);
+      color: var(--bg-color);
+      text-decoration: underline;
+    }
+
+    /* Center Brand */
+    .brand {
+      font-size: 1.8rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    /* Top Right Contact */
+    .contact-container {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .pill-btn {
+      display: inline-block;
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 9999px;
+      padding: 8px 22px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .pill-btn:hover {
+      background: #eae6df;
+    }
+
+    /* --- Main Layout Grid --- */
+    .main-container {
+      width: 100%;
+      max-width: 850px;
+      position: relative;
+    }
+
+    .page-section {
+      display: none; /* Controlled by JS tab switcher */
+    }
+
+    .page-section.active {
+      display: block;
+    }
+
+    /* Intro Card */
+    .intro-box {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      padding: 2rem;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    /* Floating Dynamic Character (Paraglider -> Skier -> Hiker) */
+    .character-avatar {
+      position: fixed;
+      right: calc(50% - 470px);
+      top: 220px;
+      font-size: 2.8rem;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+
+    @media (max-width: 1000px) {
+      .character-avatar {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+      }
+    }
+
+    .cv-action {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    /* Grid layout for Content + Left Gauge + Right Outlines */
+    .section-block {
+      display: grid;
+      grid-template-columns: 90px 1fr 100px;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      align-items: start;
+    }
+
+    .section-title {
+      grid-column: 2;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Left Altitude Gauge */
+    .altitude-gauge {
+      font-family: monospace;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      text-align: right;
+      padding-top: 10px;
+    }
+
+    .altitude-item {
+      margin-bottom: 1rem;
+      border-bottom: 2px solid var(--border-color);
+      display: inline-block;
+      padding-bottom: 2px;
+    }
+
+    /* Central Content Card */
+    .content-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      padding: 1.5rem;
+      grid-column: 2;
+    }
+
+    .content-card ul {
+      list-style-type: none;
+      line-height: 1.8;
+    }
+
+    .content-card ul li::before {
+      content: "- ";
+      font-weight: bold;
+    }
+
+    .article-item {
+      margin-bottom: 0.8rem;
+      line-height: 1.5;
+    }
+
+    .article-item:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Right Mountain Sketch */
+    .mountain-sketch {
+      grid-column: 3;
+      padding-top: 10px;
+    }
+
+    .mountain-sketch svg {
+      width: 100%;
+      height: 40px;
+      stroke: #999999;
+      fill: none;
+      stroke-width: 1.5;
+    }
+
+    /* Journo Sidebar Metadata */
+    .mountain-meta {
+      grid-column: 3;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    .country-badge {
+      display: inline-block;
+      background: #E2DDD5;
+      color: #000;
+      font-family: monospace;
+      font-weight: bold;
+      padding: 1px 5px;
+      border-radius: 4px;
+      margin-top: 3px;
+    }
+
+    /* Teaching Card Layout */
+    .course-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .course-tag {
+      font-family: monospace;
+      background: #E2DDD5;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Scroll Character -->
+  <div id="character" class="character-avatar" title="Gliding through Data...">🪂</div>
+
+  <!-- Header -->
+  <header>
+    <div class="nav-toggle">
+      <button class="nav-btn active" onclick="switchTab('data')">Data.</button>
+      <button class="nav-btn" onclick="switchTab('teaching')">Teach.</button>
+      <button class="nav-btn" onclick="switchTab('journo')">Journo.</button>
+    </div>
+
+    <div class="brand">Georger.</div>
+
+    <div class="contact-container">
+      <a href="mailto:contact@yourdomain.com" class="pill-btn">Contact?</a>
+    </div>
+  </header>
+
+  <div class="main-container">
+
+    <!-- ================= PAGE 1: DATA ================= -->
+    <div id="page-data" class="page-section active">
+      
+      <div class="intro-box">
+        Welcome to georger, my data and journalism blog, let me present myself.
+      </div>
+
+      <div class="cv-action">
+        <a href="resume.pdf" target="_blank" class="pill-btn">View my CV</a>
+      </div>
+
+      <!-- Section: Data Pages -->
+      <div class="section-block" id="sec-data-pages">
+        <div class="altitude-gauge">
+          <div class="altitude-item">4808m</div><br>
+          <div class="altitude-item">3842m</div>
+        </div>
+
+        <div style="grid-column: 2;">
+          <h2 class="section-title">Data pages.</h2>
+          <div class="content-card">
+            <div class="article-item">
+              <strong>Energy:</strong> <a href="#">Long term forecasting on sparse data</a>
+            </div>
+            <div class="article-item">
+              <strong>Finance:</strong> <a href="#">Betting on smaller cryptocurrency</a>
+            </div>
+            <div class="article-item">
+              <strong>Energy:</strong> <a href="#">Temperature impact of giant consumption...</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="mountain-sketch">
+          <svg viewBox="0 0 100 40"><polyline points="0,35 30,10 50,25 75,5 100,35" /></svg>
+          <svg viewBox="0 0 100 40"><polyline points="0,35 25,15 60,30 80,10 100,35" /></svg>
+        </div>
+      </div>
+
+      <!-- Section: Technical Skills -->
+      <div class="section-block" id="sec-skills">
+        <div class="altitude-gauge">
+          <div class="altitude-item">2500m</div>
+        </div>
+
+        <div style="grid-column: 2;">
+          <h2 class="section-title">Technical skills.</h2>
+          <div class="content-card">
+            <ul>
+              <li>Programming : Python, C++, Rust, etc.</li>
+              <li>Cloud : GCP, AWS, Cloudflare, etc.</li>
+              <li>Orchestration : Airflow, Prefect, etc.</li>
+              <li>Data : Postgres, TSDB, DuckDB, etc.</li>
+              <li>Platforms : Databricks, Snowflake</li>
+              <li>Visualisation : Power BI, Superset, DBX</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mountain-sketch">
+          <svg viewBox="0 0 100 40"><polyline points="0,35 40,12 70,28 100,35" /></svg>
+        </div>
+      </div>
+
+      <!-- Section: Experience -->
+      <div class="section-block" id="sec-experience">
+        <div class="altitude-gauge">
+          <div class="altitude-item">1500m</div>
+        </div>
+
+        <div style="grid-column: 2;">
+          <h2 class="section-title">Experience.</h2>
+          <div class="content-card">
+            <p style="margin-bottom: 1rem;"><strong>Senior Data Engineer</strong> — Lead architect for time-series forecasting pipelines operating on sparse datasets.</p>
+            <p><strong>Systems Developer</strong> — Built low-latency C++/Rust telemetry collectors for edge hardware nodes.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Hobbies -->
+      <div class="section-block" id="sec-hobbies">
+        <div class="altitude-gauge">
+          <div class="altitude-item">500m</div>
+        </div>
+
+        <div style="grid-column: 2;">
+          <h2 class="section-title">Hobbies.</h2>
+          <div class="content-card">
+            <ul>
+              <li>Alpine Skiing & Speedriding</li>
+              <li>Himalayan & Alpine Trekking</li>
+              <li>Open Source Tooling in Rust</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= PAGE 2: JOURNALISM ================= -->
+    <div id="page-journo" class="page-section">
+      
+      <div class="section-block">
+        <div class="altitude-gauge">
+          <div class="altitude-item">8611m</div>
+        </div>
+
+        <div style="grid-column: 2;">
+          <h2 class="section-title">Journalism & Alpine Field Work</h2>
+          <div class="content-card">
+            <h3 style="margin-bottom: 0.5rem;">Expedition Log: High Altitude Logistics in Karakoram</h3>
+            <p style="color: var(--text-muted); line-height: 1.5;">
+              The ascent along the Baltoro Glacier presents unique communication and data telemetry challenges. In this dispatch, we analyze meteorological sensor endurance under extreme thermal fluctuations...
+            </p>
+          </div>
+        </div>
+
+        <div class="mountain-meta">
+          <strong>K2 Peak</strong><br>
+          <span class="country-badge">PK</span>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="altitude-gauge">
+          <div class="altitude-item">4808m</div>
+        </div>
+
+        <div style="grid-column: 2;">
+          <div class="content-card">
+            <h3 style="margin-bottom: 0.5rem;">Glacier Recession Measurement in the Mont Blanc Massif</h3>
+            <p style="color: var(--text-muted); line-height: 1.5;">
+              Using localized drone photogrammetry and synthetic aperture radar, we track the seasonal ice volume loss across the Mer de Glace basin...
+            </p>
+          </div>
+        </div>
+
+        <div class="mountain-meta">
+          <strong>Mont Blanc</strong><br>
+          <span class="country-badge">FR</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= PAGE 3: TEACHING ================= -->
+    <div id="page-teaching" class="page-section">
+      
+      <h2 class="section-title" style="margin-bottom: 1.5rem;">Academic Courses & Syllabus</h2>
+
+      <div class="course-card">
+        <div>
+          <h3>Applied Data Science to Finance</h3>
+          <p style="color: var(--text-muted); margin-top: 4px;">Institution: ESCEN</p>
+        </div>
+        <span class="course-tag">Bac +5</span>
+      </div>
+
+      <div class="course-card">
+        <div>
+          <h3>Time-Series Forecasting & Infrastructure</h3>
+          <p style="color: var(--text-muted); margin-top: 4px;">Institution: Engineering School</p>
+        </div>
+        <span class="course-tag">Bac +4</span>
+      </div>
+
+      <div class="course-card">
+        <div>
+          <h3>Introduction to Systems Programming (C++/Rust)</h3>
+          <p style="color: var(--text-muted); margin-top: 4px;">Institution: University</p>
+        </div>
+        <span class="course-tag">Bac +3</span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Tab Switcher Logic
+    function switchTab(tabName) {
+      // Toggle button visual state
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      // Toggle page visibility
+      document.querySelectorAll('.page-section').forEach(page => {
+        page.classList.remove('active');
+      });
+      document.getElementById('page-' + tabName).classList.add('active');
+
+      // Hide floating character on non-data pages
+      const charEl = document.getElementById('character');
+      if (tabName !== 'data') {
+        charEl.style.display = 'none';
+      } else {
+        charEl.style.display = 'block';
+      }
+    }
+
+    // Scroll-Activated Dynamic Character Switcher (Paraglider -> Skier -> Hiker)
+    window.addEventListener('scroll', () => {
+      const charEl = document.getElementById('character');
+      const scrollPos = window.scrollY;
+
+      // Distance thresholds based on scroll depth
+      if (scrollPos < 350) {
+        charEl.innerText = '🪂'; // High Altitude: Paraglider
+        charEl.setAttribute('title', 'Gliding over Data Pages...');
+      } else if (scrollPos >= 350 && scrollPos < 750) {
+        charEl.innerText = '⛷️'; // Mid Altitude: Skier
+        charEl.setAttribute('title', 'Skiing through Technical Skills...');
+      } else {
+        charEl.innerText = '🥾'; // Low Altitude: Hiker
+        charEl.setAttribute('title', 'Hiking through Hobbies...');
+      }
+    });
+  </script>
+</body>
+</html>
